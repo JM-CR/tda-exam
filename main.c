@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include "util.h"
 
-#define SAMPLES 1000
-#define TF 10.0
+#define SAMPLES 10000
+#define TF 5.0
 
 int main(void) {
 
@@ -20,14 +20,11 @@ int main(void) {
     // Calculate points
     double value = 0.0;
     double slice = TF / SAMPLES;
-    for ( int i = 0; i < SAMPLES; ++i, value += slice ) {
+    for ( int i = 0; i < SAMPLES; ++i, value += slice )
         points[i] = value;
-        printf("%lf%c", points[i], i % 10 == 9 ? '\n' : ' ');
-    }
 
     // Send to the engine
-    setSampleSize(SAMPLES);
-    processData(points);
+    processData(points, SAMPLES);
 
     return 0;
 }

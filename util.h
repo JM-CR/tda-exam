@@ -19,16 +19,8 @@
 /* Function prototypes */
 
 /**
- * Sets the number of desired results for the Euler's method.
- * This function must be called before processData().
- *
- * @param size Number of results to process.
- */
-void setSampleSize( unsigned int size );
-
-/**
  * The number of results depend on the previous call of setSampleSize().
  */
-void processData( double *points );
+void processData( double *points, size_t samples );
 
 #endif

@@ -21,30 +21,34 @@
 #define R 1000
 #define C 10E-6
 
-/* Private global variables */
-
-static size_t sampleSize;   // Number of results
+#define OUTFILE "points.dat"
 
 /* Private functions */
 
 /**
  * Implementation for the 'f(t)' function.
  * 
- * @param t Time to evaluate.
+ * @param time Time to evaluate.
  * @return Point at given time.
  */
-static double firstSignal( double t ) {
-	return 1.0;
+static double firstSignal( double time ) {
+	double result = 0.0;
+	for ( int n = 1; n <= N; ++n ) 
+		result += cos(2*PI*n*time) * sin(PI*n/2) / (PI * n);
+	return result;
 }
 
 /**
  * Implementation for the 'f(t)' function.
  * 
- * @param t Time to evaluate.
+ * @param time Time to evaluate.
  * @return Point at given time.
  */
-static double secondSignal( double t ) {
-	return 1.0;
+static double secondSignal( double time ) {
+	double result = 0.0;
+	for ( int n = 1; n <= N; ++n )
+		result += sin(2*PI*n*time) * sin(PI*n/2) / (PI*n*R*C * PI*n);
+	return result;
 }
 
 /**
@@ -52,10 +56,9 @@ static double secondSignal( double t ) {
  */
 static void createGraph( void ) {
     char *commands[] = {
-        "set title 'Euler approximation'",
-        "set xlabel 'Time (s)'",
-        "set ylabel 'Samples",
-        "plot 'solution.dat' u 1:2 title '' with lines"
+        "set xlabel 'Time(s)",
+        "set ylabel 'Amplitude'",
+        "plot 'points.dat' u 1:2 title 'First' with lines, '' u 1:3 title 'Second' with lines"
     };
     int length = sizeof(commands) / sizeof(char *);
     plot(commands, length);
@@ -68,19 +71,21 @@ static void createGraph( void ) {
 
 /* Implementation of the public functions */
 
-void setSampleSize( unsigned int size ) {
-	sampleSize = size;
-}
-
-void processData( double *points ) {
+void processData( double *points, size_t samples ) {
 	// Evalute arguments
-	if ( points == NULL || finalTime == 0.0 )
+	if ( points == NULL )
 		return;
 
 	// Clean up and calculations
-	removeFile("points.dat");
-	firstSignal(points);
-	secondSignal(points);
+	removeFile(OUTFILE);
+
+	double results[3];
+	for ( int i = 0; i < samples; ++i ) {
+		results[0] = points[i];
+		results[1] = firstSignal(points[i]);
+		results[2] = secondSignal(points[i]);
+		saveState(OUTFILE, results, 3);
+	}
 
 	// Plot results
 	createGraph();
