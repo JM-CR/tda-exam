@@ -1,14 +1,14 @@
-// Utilities for the exam.
+// Some utility functions for the exam.
 // Author: Josue Mosiah Contreras Rocha
 // File: util.h
-// Date: 17/02/20
+// Date: 27/02/20
 
 #ifndef UTIL_H
 #define UTIL_H
 
-// -----------------------------
-// System headers
-// -----------------------------
+// ------------------------------------------
+// System and aplication specific headers
+// ------------------------------------------
 #include "gnuplot.h"
 
 

@@ -1,7 +1,7 @@
 // See util.h for more info
 // Author: Josue Mosiah Contreras Rocha
 // File: util.c
-// Date: 17/02/20
+// Date: 27/02/20
 
 // ------------------------------------------
 // System and aplication specific headers
@@ -26,7 +26,7 @@
 /* Private functions */
 
 /**
- * Implementation for the 'f(t)' function.
+ * Implementation of the first function.
  * 
  * @param time Time to evaluate.
  * @return Point at given time.
@@ -39,7 +39,7 @@ static double firstSignal( double time ) {
 }
 
 /**
- * Implementation for the 'f(t)' function.
+ * Implementation of the second function.
  * 
  * @param time Time to evaluate.
  * @return Point at given time.
@@ -54,7 +54,7 @@ static double secondSignal( double time ) {
 /**
  * Sends specific commands to GNUPlot.
  */
-static void createGraph( void ) {
+static void createGraph(void) {
     char *commands[] = {
         "set xlabel 'Time(s)",
         "set ylabel 'Amplitude'",
@@ -73,7 +73,7 @@ static void createGraph( void ) {
 
 void processData( double *points, size_t samples ) {
 	// Evalute arguments
-	if ( points == NULL )
+	if ( points == NULL || samples <= 0 )
 		return;
 
 	// Clean up and calculations

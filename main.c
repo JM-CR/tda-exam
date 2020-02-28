@@ -9,22 +9,25 @@
 #include <stdlib.h>
 #include "util.h"
 
-#define SAMPLES 10000
-#define TF 5.0
+int main( int argc, char *argv[] ) {
+    // Console arguments
+    if ( argc != 3 )
+        return 1;
 
-int main(void) {
+    int samples = strtol(argv[2], NULL, 10);
+    double tf = strtol(argv[1], NULL, 10);   
 
     // Create memory
-    double *points = calloc(SAMPLES, sizeof(double));
+    double *points = calloc(samples, sizeof(double));
 
     // Calculate points
     double value = 0.0;
-    double slice = TF / SAMPLES;
-    for ( int i = 0; i < SAMPLES; ++i, value += slice )
+    double slice = tf / samples;
+    for ( int i = 0; i < samples; ++i, value += slice )
         points[i] = value;
 
     // Send to the engine
-    processData(points, SAMPLES);
+    processData(points, samples);
 
     return 0;
 }

@@ -23,7 +23,7 @@
  * Used to delete a file created in the saveState function.
  *
  * @param file Filename.
- * @return True if the file was deleted.
+ * @return True if the file was deleted; otherwise, false.
  */
 bool removeFile( const char *file );
 
