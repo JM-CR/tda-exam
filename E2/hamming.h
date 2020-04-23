@@ -54,4 +54,13 @@ unsigned int checkError( uint16_t encoding, size_t size );
  */
 uint8_t decode( uint16_t encoding, size_t size );
 
+/**
+ * Prints the binary equivalent of a number.
+ *
+ * @param x Decimal number.
+ * @param size Number of bits to print.
+ * @return String with the result.
+ */
+const char *numberToBinary( int x, size_t size );
+
 #endif

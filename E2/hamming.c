@@ -7,6 +7,7 @@
 // System and aplication specific headers
 // ------------------------------------------
 #include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
 #include <math.h>
 #include "hamming.h"
@@ -95,7 +96,6 @@ static uint16_t createContainer( uint8_t from, size_t size ) {
     }
     return result;
 }
-
 
 /**
  * Calculates the parity bit Rn.
@@ -210,4 +210,14 @@ uint8_t decode( uint16_t encoding, size_t size ) {
         insertBit(bit, &message, d);
     }
     return message;
+}
+
+const char *numberToBinary( int x, size_t size ) {
+    // Convert
+    static char b[10];
+    b[0] = '\0';
+    for ( uint32_t z = pow(2, size - 1); z > 0; z >>= 1 ) {
+        strcat(b, ((x & z) == z) ? "1" : "0");
+    }
+    return b;
 }
