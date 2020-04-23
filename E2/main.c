@@ -18,7 +18,7 @@ int main( int argc, char *argv[] ) {
     printf("0x%X\n", encoding);
 
     // Change bit
-    changeBit(&encoding, 6);
+    changeBit(&encoding, 3);
     printf("0x%X\n", encoding);
 
     // Check error

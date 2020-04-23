@@ -96,6 +96,44 @@ static uint16_t createContainer( uint8_t from, size_t size ) {
     return result;
 }
 
+
+/**
+ * Calculates the parity bit Rn.
+ *
+ * @param encoding Container with the data bits.
+ * @param pos Initial position to retrieve bits.
+ * @param r Rn to calculate (Starting with 0).
+ * @param cycles Number of cycles per Rn.
+ * @param size Number of bits in the original message.
+ * @return Parity bit.
+ */
+static uint16_t calculateParityBit( uint16_t encoding, int pos, int r, int cycles, size_t size ) {
+    // Initialize
+    unsigned int total = totalParityBits(size);
+    uint16_t result = getBit(encoding, pos);
+    bool flag = true;
+    
+    // Calculations
+    while ( flag ) {
+        // Position to read
+        if ( cycles == 0 ) {
+            pos += pow(2, r) + 1;
+            cycles = r;
+        } else {
+            pos++;
+            cycles--;
+        }
+
+        // Logical operation
+        if ( pos < size + total ) {
+            result ^= getBit(encoding, pos);
+        } else {
+            flag = false;
+        }
+    }
+    return result;
+}
+
 /**
  * Calculates and adds the redundancy bits.
  *
@@ -104,41 +142,20 @@ static uint16_t createContainer( uint8_t from, size_t size ) {
  */
 static void addParityBits( uint16_t *container, size_t size ) {
     // Calculate values
-    uint16_t parity, pos;
+    uint16_t parity;
     unsigned int total = totalParityBits(size);
-    for ( int r = 0, cycles; r < total; ++r ) {
-        // Get first bit
+    for ( int r = 0, cycles, pos; r < total; ++r ) {
+        // Setup values
         if ( r == 0 || r == 1 ) {
             pos = 2;
-            parity = getBit(*container, pos);
             cycles = 0;
         } else {
             pos = pow(2, r);
-            parity = getBit(*container, pos);
             cycles = r;
         }
 
-        // XOR
-        bool flag = true;
-        while ( flag ) {
-            // Position to read
-            if ( cycles == 0 ) {
-                pos += pow(2, r) + 1;
-                cycles = r;
-            } else {
-                pos++;
-                cycles--;
-            }
-
-            // Logical operation
-            if ( pos < size + total ) {
-                parity ^= getBit(*container, pos);
-            } else {
-                flag = false;
-            }
-        }
-
-        // Add result
+        // Update values
+        parity = calculateParityBit(*container, pos, r, cycles, size);
         insertBit(parity, container, r_positions[r]);
     }
 }
@@ -162,43 +179,24 @@ void changeBit( uint16_t *encoding, unsigned int pos ) {
 
 unsigned int checkError( uint16_t encoding, size_t size ) {
     // Processing
-    unsigned int total = totalParityBits(size), error = 0;
-    uint16_t pos, parity;
-    for ( int r = 0, cycles; r < total; ++r ) {
-        // Get first bit
+    uint16_t parity;
+    unsigned int error = 0;
+    unsigned int total = totalParityBits(size);
+    for ( int r = 0, cycles, pos; r < total; ++r ) {
+        // Setup values
         pos = pow(2, r) - 1;
-        parity = getBit(encoding, pos);
         if ( r == 0 || r == 1 ) {
             cycles = r;
         } else {
             cycles = r + 1;
         }
 
-        // XOR
-        bool flag = true;
-        while ( flag ) {
-            // Position to read
-            if ( cycles == 0 ) {
-                pos += pow(2, r) + 1;
-                cycles = r;
-            } else {
-                pos++;
-                cycles--;
-            }
-
-            // Logical operation
-            if ( pos < size + total ) {
-                parity ^= getBit(encoding, pos);
-            } else {
-                flag = false;
-            }
-        }
-
+        // Update values
+        parity = calculateParityBit(encoding, pos, r, cycles, size);
         if ( parity == 1 ) {
             error += pow(2, r);
         }
     }
 
-
-    return error ;
+    return error;
 }
