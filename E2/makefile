@@ -13,7 +13,7 @@ DEFS =
 BIN = main
 
 # Object files from which $BIN depends
-OBJS = hamming.o
+OBJS = hamming.o interface.o
 
 # This default rule compiles the executable program
 $(BIN): $(OBJS) $(BIN).c

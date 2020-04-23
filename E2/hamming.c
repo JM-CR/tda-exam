@@ -7,7 +7,6 @@
 // System and aplication specific headers
 // ------------------------------------------
 #include <stdio.h>
-#include <string.h>
 #include <stdbool.h>
 #include <math.h>
 #include "hamming.h"
@@ -41,7 +40,7 @@ static uint16_t getBit( uint16_t from, unsigned int at ) {
  *
  * @param bit Bit to insert.
  * @param at Variable where the bit will be inserted.
- * @param pos Position to insert at the variable (Starting with 0).
+ * @param pos Position to insert (Starting with 0).
  */
 static void insertBit( uint8_t bit, uint16_t *at, unsigned int pos ) {
     uint16_t value = bit << pos;
@@ -49,10 +48,10 @@ static void insertBit( uint8_t bit, uint16_t *at, unsigned int pos ) {
 }
 
 /**
- * Checks if a position is for a redundancy bit.
+ * Checks if a position is for a parity bit.
  *
  * @param pos Position to check (Starting from 0).
- * @return True for redundancy position; otherwise, false
+ * @return True for parity position; otherwise, false
  */
 static bool isParityPosition( unsigned int pos ) {
     bool flag = false;
@@ -124,7 +123,7 @@ static uint16_t calculateParityBit( uint16_t encoding, int pos, int r, int cycle
             cycles--;
         }
 
-        // Logical operation
+        // XOR
         if ( pos < totalBits ) {
             result ^= getBit(encoding, pos);
         } else {
@@ -135,7 +134,7 @@ static uint16_t calculateParityBit( uint16_t encoding, int pos, int r, int cycle
 }
 
 /**
- * Calculates and adds the redundancy bits.
+ * Calculates and sets the parity bits.
  *
  * @param container Container with the data bits.
  * @param size Number of bits in the message.
@@ -168,9 +167,9 @@ static void setParityBits( uint16_t *container, size_t size ) {
 /* Implementation of the public functions */
 
 uint16_t encode( uint8_t message, size_t size ) {
-    uint16_t result = createContainer(message, size);
-    setParityBits(&result, size);
-    return result;
+    uint16_t encoding = createContainer(message, size);
+    setParityBits(&encoding, size);
+    return encoding;
 }
 
 void changeBit( uint16_t *encoding, unsigned int pos ) {
@@ -210,14 +209,4 @@ uint8_t decode( uint16_t encoding, size_t size ) {
         insertBit(bit, &message, d);
     }
     return message;
-}
-
-const char *numberToBinary( int x, size_t size ) {
-    // Convert
-    static char b[10];
-    b[0] = '\0';
-    for ( uint32_t z = pow(2, size - 1); z > 0; z >>= 1 ) {
-        strcat(b, ((x & z) == z) ? "1" : "0");
-    }
-    return b;
 }

@@ -6,6 +6,7 @@
 // System and aplication specific headers
 // ------------------------------------------
 #include <stdio.h>
+#include "interface.h"
 #include "hamming.h"
 
 #define DATA_SIZE 4
@@ -13,27 +14,30 @@
 
 int main( int argc, char *argv[] ) {
     // Create message
-    uint8_t message = 0x9;
-    printf("Dato: %s\n", numberToBinary(message, DATA_SIZE));
+    initialGuide();
+    uint8_t message = askValue("Dato a transmitir ", 0, 15);
+    printBinary("Mensaje: ", message, DATA_SIZE);
 
     // Encode
     uint16_t encoding = encode(message, DATA_SIZE);
-    printf("Mensaje codificado: %s\n\n", numberToBinary(encoding, FULL_SIZE));
+    printBinary("Mensaje codificado: ", encoding, FULL_SIZE);
 
     // Change bit
-    changeBit(&encoding, 2);
-    printf("Mensaje transmitido: %s\n", numberToBinary(encoding, FULL_SIZE));
+    unsigned int position = askValue("Bit de error [7:1] ", 1, 7);
+    changeBit(&encoding, position - 1);
+    printBinary("\nMensaje transmitido: ", encoding, FULL_SIZE);
 
     // Check error
     unsigned int error = checkError(encoding, FULL_SIZE);
-    printf("Posición del error: %u\n\n", error);
+    printBinary("C[2:0]: ", error, 3);
     if ( error != 0 ) {
         changeBit(&encoding, error - 1);
     }
 
     // Decode
     uint8_t decoding = decode(encoding, DATA_SIZE);
-    printf("Mensaje decodificado: %s\n", numberToBinary(decoding, DATA_SIZE));
+    printBinary("\nMensaje decodificado: ", decoding, DATA_SIZE);
+    printf("\n");
 
     return 0;
 }
