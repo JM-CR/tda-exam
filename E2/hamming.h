@@ -17,12 +17,6 @@
 // Public interface
 // -----------------------------
 
-/* Constants */
-
-/* Types declarations */
-
-/* Global variables */
-
 /* Function prototypes */
 
 /**
@@ -50,5 +44,14 @@ void changeBit( uint16_t *encoding, unsigned int pos );
  * @return Zero if no error; otherwise, the error's position.
  */
 unsigned int checkError( uint16_t encoding, size_t size );
+
+/**
+ * Retrieves the data bits from a transmitted message.
+ *
+ * @param encoding Encoded message.
+ * @param size Number of bits in the original message.
+ * @return Decoded message.
+ */
+uint8_t decode( uint16_t encoding, size_t size );
 
 #endif

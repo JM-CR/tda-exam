@@ -10,22 +10,27 @@
 
 int main( int argc, char *argv[] ) {
     // Create message
-    uint16_t message = 0xA;
-    size_t bits = 4;
+    uint8_t message = 0x1A;
+    size_t bits = 6;
 
     // Encode
     uint16_t encoding = encode(message, bits);
-    printf("0x%X\n", encoding);
+    printf("Mensaje codificado: 0x%X\n", encoding);
 
     // Change bit
-    changeBit(&encoding, 3);
-    printf("0x%X\n", encoding);
+    changeBit(&encoding, 2);
+    printf("Mensaje transmitido: 0x%X\n\n", encoding);
 
     // Check error
     unsigned int error = checkError(encoding, bits);
-    printf("%u\n", error);
+    printf("Posición del error: %u\n", error - 1);
+    if ( error != 0 ) {
+        changeBit(&encoding, error - 1);
+    }
 
     // Decode
+    uint8_t decoding = decode(encoding, bits);
+    printf("Mensaje decodificado: 0x%X\n", decoding);
 
     return 0;
 }

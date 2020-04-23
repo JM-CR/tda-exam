@@ -109,7 +109,7 @@ static uint16_t createContainer( uint8_t from, size_t size ) {
  */
 static uint16_t calculateParityBit( uint16_t encoding, int pos, int r, int cycles, size_t size ) {
     // Initialize
-    unsigned int total = totalParityBits(size);
+    unsigned int totalBits = totalParityBits(size) + size;
     uint16_t result = getBit(encoding, pos);
     bool flag = true;
     
@@ -125,7 +125,7 @@ static uint16_t calculateParityBit( uint16_t encoding, int pos, int r, int cycle
         }
 
         // Logical operation
-        if ( pos < size + total ) {
+        if ( pos < totalBits ) {
             result ^= getBit(encoding, pos);
         } else {
             flag = false;
@@ -140,7 +140,7 @@ static uint16_t calculateParityBit( uint16_t encoding, int pos, int r, int cycle
  * @param container Container with the data bits.
  * @param size Number of bits in the message.
  */
-static void addParityBits( uint16_t *container, size_t size ) {
+static void setParityBits( uint16_t *container, size_t size ) {
     // Calculate values
     uint16_t parity;
     unsigned int total = totalParityBits(size);
@@ -169,7 +169,7 @@ static void addParityBits( uint16_t *container, size_t size ) {
 
 uint16_t encode( uint8_t message, size_t size ) {
     uint16_t result = createContainer(message, size);
-    addParityBits(&result, size);
+    setParityBits(&result, size);
     return result;
 }
 
@@ -199,4 +199,15 @@ unsigned int checkError( uint16_t encoding, size_t size ) {
     }
 
     return error;
+}
+
+uint8_t decode( uint16_t encoding, size_t size ) {
+    // Retrieve data
+    uint16_t message = 0x00, bit;
+    for ( size_t d = 0, pos = 0; d < size; d++ ) {
+        while ( isParityPosition(pos) ) pos++;
+        bit = getBit(encoding, pos++);
+        insertBit(bit, &message, d);
+    }
+    return message;
 }
