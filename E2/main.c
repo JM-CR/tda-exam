@@ -9,6 +9,17 @@
 #include "hamming.h"
 
 int main( int argc, char *argv[] ) {
-    printf("0x%X\n", encode(0xA, 4));
+    // Create message
+    uint16_t message = 0xA;
+    size_t bits = 4;
+
+    // Encode
+    uint16_t encoding = encode(message, bits);
+    printf("0x%X\n", encoding);
+
+    // Change bit
+    changeBit(&encoding, 2);
+    printf("0x%X\n", encoding);
+
     return 0;
 }

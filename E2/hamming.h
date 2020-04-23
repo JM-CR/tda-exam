@@ -34,4 +34,12 @@
  */
 uint16_t encode( uint8_t message, size_t size );
 
+/**
+ * Simulates an error when transmiting the message.
+ *
+ * @param enconding Encoded message.
+ * @param pos Position of the bit to change.
+ */
+void changeBit( uint16_t *encoding, unsigned int pos );
+
 #endif

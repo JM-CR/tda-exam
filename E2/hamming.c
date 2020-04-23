@@ -146,3 +146,7 @@ uint16_t encode( uint8_t message, size_t size ) {
     addParityBits(&result, size);
     return result;
 }
+
+void changeBit( uint16_t *encoding, unsigned int pos ) {
+    *encoding ^= 0x0001 << pos;
+}
