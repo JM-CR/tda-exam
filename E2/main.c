@@ -18,8 +18,14 @@ int main( int argc, char *argv[] ) {
     printf("0x%X\n", encoding);
 
     // Change bit
-    changeBit(&encoding, 2);
+    changeBit(&encoding, 6);
     printf("0x%X\n", encoding);
+
+    // Check error
+    unsigned int error = checkError(encoding, bits);
+    printf("%u\n", error);
+
+    // Decode
 
     return 0;
 }

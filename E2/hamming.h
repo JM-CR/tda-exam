@@ -42,4 +42,13 @@ uint16_t encode( uint8_t message, size_t size );
  */
 void changeBit( uint16_t *encoding, unsigned int pos );
 
+/**
+ * Checks if an error occurred after transmission.
+ *
+ * @param encoding Encoded message.
+ * @param size Number of bits in the original message.
+ * @return Zero if no error; otherwise, the error's position.
+ */
+unsigned int checkError( uint16_t encoding, size_t size );
+
 #endif
