@@ -8,6 +8,7 @@
 // ------------------------------------------
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 #include "hamming.h"
 
 
@@ -17,7 +18,7 @@
 
 /* Private global variables */
 
-static unsigned int redudancy[] = { 0, 1, 3, 7, 15 }; 
+static unsigned int r_positions[] = { 0, 1, 3, 7, 15 };  
 
 /* Private functions */
 
@@ -52,11 +53,11 @@ static void insertBit( uint8_t bit, uint16_t *at, unsigned int pos ) {
  * @param pos Position to check (Starting from 0).
  * @return True for redundancy position; otherwise, false
  */
-static bool isRedundacyPosition( unsigned int pos ) {
+static bool isParityPosition( unsigned int pos ) {
     bool flag = false;
-    size_t size = sizeof(redudancy) / sizeof(int);
+    size_t size = sizeof(r_positions) / sizeof(int);
     for ( size_t n = 0; n < size; ++n ) {
-        if ( redudancy[n] == pos ) {
+        if ( r_positions[n] == pos ) {
             flag = true;
             break;
         }
@@ -71,14 +72,66 @@ static bool isRedundacyPosition( unsigned int pos ) {
  * @param size Number of bits in the message.
  * @return Holder with the initial values.
  */
-static uint16_t createHolder( uint8_t from, size_t size ) {
+static uint16_t createContainer( uint8_t from, size_t size ) {
     uint16_t bit, result = 0x0000;
     for ( size_t n = 0, pos = 0; n < size; n++, pos++ ) {
         bit = getBit(from, n);
-        while ( isRedundacyPosition(pos) ) pos++;
+        while ( isParityPosition(pos) ) pos++;
         insertBit(bit, &result, pos);
     }
     return result;
+}
+
+/**
+ * Calculates and adds the redundancy bits.
+ *
+ * @param holder Holder with the data bits.
+ * @param size Number of bits in the message.
+ */
+static void addParityBits( uint16_t *holder, size_t size ) {
+    // Calculate number of bits
+    unsigned int total = 0;
+    while ( pow(2, total) < (size + total + 1) ) {
+        total++;
+    }
+
+    // Calculate values
+    uint16_t parity, pos;
+    for ( int r = 0, cycles; r < total; ++r ) {
+        // Get first bit
+        if ( r == 0 || r == 1 ) {
+            pos = 2;
+            parity = getBit(*holder, pos);
+            cycles = 0;
+        } else {
+            pos = pow(2, r);
+            parity = getBit(*holder, pos);
+            cycles = r;
+        }
+
+        // XOR
+        bool flag = true;
+        while ( flag ) {
+            // Position to read
+            if ( cycles == 0 ) {
+                pos += pow(2, r) + 1;
+                cycles = r;
+            } else {
+                pos++;
+                cycles--;
+            }
+
+            // Logical operation
+            if ( pos < size + total ) {
+                parity ^= getBit(*holder, pos);
+            } else {
+                flag = false;
+            }
+        }
+
+        // Add result
+        insertBit(parity, holder, r_positions[r]);
+    }
 }
 
 
@@ -89,7 +142,7 @@ static uint16_t createHolder( uint8_t from, size_t size ) {
 /* Implementation of the public functions */
 
 uint16_t encode( uint8_t message, size_t size ) {
-    uint16_t result = createHolder(message, size);
-
+    uint16_t result = createContainer(message, size);
+    addParityBits(&result, size);
     return result;
 }
